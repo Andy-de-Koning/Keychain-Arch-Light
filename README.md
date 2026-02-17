@@ -9,6 +9,13 @@ De originele `keychain` is fantastisch, maar bevat veel "legacy code" voor antie
 - **CPU-vriendelijk:** Geen achtergrondprocessen of oneindige loops; het script voert zijn taak uit en sluit direct af.
 - **Arch-native:** Geen afhankelijkheid van `inetutils` (hostname).
 
+
+## Installatie via AUR (Aanbevolen voor Arch gebruikers)
+Gebruik je favoriete AUR-helper (zoals `yay` of `paru`):
+```bash
+yay -S keychain-arch-light
+```
+
 ## Installatie
 
 ### 1. Clone de repository:
