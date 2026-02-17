@@ -1,0 +1,32 @@
+#!/bin/bash
+# Eigen Keychain-light voor Arch/Hyprland
+KEYDIR="$HOME/.keychain"
+mkdir -p "$KEYDIR"
+ENV_FILE="$KEYDIR/${HOSTNAME:-archlinux}-env"
+
+start_agent() {
+    [ -f "$ENV_FILE" ] && source "$ENV_FILE" > /dev/null
+    if [ -z "$SSH_AGENT_PID" ] || ! kill -0 "$SSH_AGENT_PID" 2>/dev/null; then
+        ssh-agent -s > "$ENV_FILE"
+        source "$ENV_FILE" > /dev/null
+    fi
+}
+
+DO_EVAL=false
+KEYS=()
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --eval) DO_EVAL=true; shift ;;
+        --agents) shift; shift ;; # skip --agents + ssh
+        *) KEYS+=("$1"); shift ;;
+    esac
+done
+
+start_agent
+for key in "${KEYS[@]}"; do
+    if ! ssh-add -l | grep -q "$key"; then
+        ssh-add "$HOME/.ssh/$key" 2>/dev/null
+    fi
+done
+
+[ "$DO_EVAL" = true ] && cat "$ENV_FILE"
