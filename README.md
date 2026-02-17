@@ -37,6 +37,28 @@ cp keychain ~/.local/bin/
 Voeg de volgende regel toe aan je .zshrc of .bashrc:
 
 ```bash
-eval $(~/.local/bin/keychain --eval --agents ssh id_rsa)
+eval $(keychain --eval --agents ssh id_rsa)
 ```
 
+### Lazy Loader
+Voeg de volgende regel toe aan je .zshrc of .bashrc voor lazy loading. 
+
+```bash
+ssh() {
+    unfunction ssh
+    if [ -z "$SSH_AUTH_SOCK" ]; then
+        eval $(keychain --eval --agents ssh id_rsa)
+    fi
+    ssh "$@"
+}
+
+git() {
+    unfunction git
+    if [ -z "$SSH_AUTH_SOCK" ]; then
+        eval $(/usr/bin/keychain --eval --agents ssh id_rsa)
+    fi
+    git "$@"
+}
+```
+Dit zorgt ervoor dat de agent alleen wordt gestart zodra ssh of git wordt gebruikt.
+##
