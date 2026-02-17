@@ -7,7 +7,7 @@ ENV_FILE="$KEYDIR/${HOSTNAME:-archlinux}-env"
 start_agent() {
   [ -f "$ENV_FILE" ] && source "$ENV_FILE" >/dev/null
   if [ -z "$SSH_AGENT_PID" ] || ! kill -0 "$SSH_AGENT_PID" 2>/dev/null; then
-    ssh-agent -s >"$ENV_FILE"
+    ssh-agent -s | grep -v "Agent pid" >"$ENV_FILE"
     source "$ENV_FILE" >/dev/null
   fi
 }
@@ -40,4 +40,6 @@ for key in "${KEYS[@]}"; do
   fi
 done
 
-[ "$DO_EVAL" = true ] && cat "$ENV_FILE"
+if [ "$DO_EVAL" = true ]; then
+  grep -E 'SSH_AUTH_SOCK|SSH_AGENT_PID' "$ENV_FILE"
+fi
